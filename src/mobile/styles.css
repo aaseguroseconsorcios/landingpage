@@ -1419,3 +1419,11 @@
     .sim-value { font-size: 30px; }
     .test-quote { font-size: 19px; }
   }
+
+  /* Em viewports mais baixos, deixa a seção Produtos crescer além de 100dvh
+     se necessário e garante uma altura mínima legível para cada card, em vez
+     de comprimir o flex: 1 até o CTA do terceiro card sumir. */
+  @media (max-height: 800px) {
+    .s-products { height: auto; }
+    .s-products .product-card { min-height: 160px; }
+  }
