@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from './Icons.jsx';
+import { openWhatsapp } from '../shared/whatsapp.js';
 
 export function QuizForm({ onClose }) {
   const [step, setStep] = useState(1);
@@ -16,7 +17,11 @@ export function QuizForm({ onClose }) {
   const canNext3 = data.nome && data.email && data.telefone;
 
   const next = () => {
-    if (step === 3) { setDone(true); return; }
+    if (step === 3) {
+      openWhatsapp(data);
+      setDone(true);
+      return;
+    }
     setStep(step + 1);
   };
   const back = () => setStep(Math.max(1, step - 1));
@@ -39,9 +44,13 @@ export function QuizForm({ onClose }) {
         <div className="quiz-success-icon">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7"/></svg>
         </div>
-        <h3>Recebemos suas respostas, {data.nome.split(' ')[0] || 'você'}!</h3>
-        <p>Um especialista vai te chamar no WhatsApp em instantes com a melhor estratégia.</p>
+        <h3>Pronto, {data.nome.split(' ')[0] || 'você'}!</h3>
+        <p>Te encaminhamos pro WhatsApp com sua simulação. Caso a aba não tenha aberto, clique no botão abaixo.</p>
         <button className="quiz-next" style={{flex: 'none', width: 'auto', alignSelf: 'center', padding: '13px 26px'}}
+          onClick={() => openWhatsapp(data)}>
+          <Icon.Wpp width="16" height="16" /> Abrir WhatsApp
+        </button>
+        <button className="quiz-back" style={{alignSelf: 'center', marginTop: 8}}
           onClick={() => { setDone(false); setStep(1); setData({objetivo:'',tipoImovel:'',tipoVeiculo:'',valor:'',renda:'',idade:'',nome:'',email:'',telefone:''}); }}>
           Refazer simulação
         </button>
