@@ -42,7 +42,6 @@
   }
   .section {
     min-height: 100dvh;
-    height: 100dvh;
     width: 100%;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -55,9 +54,12 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: calc(var(--safe-top) + 24px) 22px calc(var(--safe-bot) + 96px);
+    padding: calc(var(--safe-top) + 22px) 22px calc(var(--safe-bot) + 28px);
     position: relative;
     z-index: 2;
+  }
+  .s-hero .section-inner {
+    padding-bottom: calc(var(--safe-bot) + 72px);
   }
 
   /* ============ TOPBAR ============ */
@@ -399,11 +401,8 @@
     flex-direction: column;
     gap: 12px;
     margin-top: 24px;
-    flex: 1;
-    min-height: 0;
   }
   .product-card {
-    flex: 1;
     border-radius: 22px;
     padding: 20px;
     position: relative;
@@ -411,9 +410,9 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 36px;
     cursor: pointer;
     transition: transform .25s ease;
-    min-height: 0;
   }
   .product-card:active { transform: scale(0.98); }
   .product-imovel {
@@ -1418,12 +1417,22 @@
     .product-title { font-size: 26px; }
     .sim-value { font-size: 32px; }
   }
-  /* shorter screens */
+  /* shorter screens — caches iPhone 13 com Safari toolbar visível (~770dvh) */
+  @media (max-height: 820px) {
+    .section-inner { padding-top: calc(var(--safe-top) + 14px); padding-bottom: calc(var(--safe-bot) + 18px); }
+    .s-hero .section-inner { padding-bottom: calc(var(--safe-bot) + 56px); }
+    .hero-title { font-size: clamp(38px, 10vw, 54px); }
+    .h-title { font-size: clamp(28px, 7.5vw, 38px); }
+    .product-title { font-size: 22px; }
+    .product-card { padding: 16px; gap: 24px; }
+    .product-stack { gap: 10px; margin-top: 16px; }
+    .sim-value { font-size: 28px; }
+    .test-quote { font-size: 18px; }
+  }
+  /* extra-short screens — iPhone SE / Galaxy compact (max ~700dvh) */
   @media (max-height: 700px) {
-    .section-inner { padding-top: calc(var(--safe-top) + 18px); padding-bottom: calc(var(--safe-bot) + 80px); }
-    .hero-title { font-size: clamp(40px, 11vw, 60px); }
-    .h-title { font-size: clamp(30px, 8vw, 42px); }
-    .product-title { font-size: 24px; }
-    .sim-value { font-size: 30px; }
-    .test-quote { font-size: 19px; }
+    .h-title { font-size: clamp(26px, 7vw, 34px); }
+    .hero-title { font-size: clamp(34px, 9vw, 48px); }
+    .product-card { padding: 14px; gap: 18px; }
+    .product-stack { gap: 8px; margin-top: 12px; }
   }
