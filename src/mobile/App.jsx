@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './styles.css';
 
 const Icon = {
@@ -591,7 +591,6 @@ const ACCENTS = {
 };
 
 export default function MobileApp() {
-  const scrollerRef = useRef(null);
   const [active, setActive] = useState(0);
   const [quizOpen, setQuizOpen] = useState(false);
   const sectionsCount = 9;
@@ -605,36 +604,30 @@ export default function MobileApp() {
   }, []);
 
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
     const onScroll = () => {
-      const idx = Math.round(el.scrollTop / window.innerHeight);
+      const idx = Math.round(window.scrollY / window.innerHeight);
       setActive(Math.max(0, Math.min(sectionsCount - 1, idx)));
     };
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const jumpTo = (i) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    el.scrollTo({ top: i * el.clientHeight, behavior: 'smooth' });
+    window.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
   };
 
   return (
     <>
       {TWEAKS.showDots && <Dots count={sectionsCount} active={active} onJump={jumpTo} />}
-      <div className="scroller" ref={scrollerRef}>
-        <HeroSection onCta={() => jumpTo(2)} onScroll={() => jumpTo(1)} />
-        <ProductsSection onPick={() => jumpTo(2)} />
-        <QuizSection />
-        <VantagensSection />
-        <CompareSection />
-        <ComoFunciona />
-        <DepoimentosSection />
-        <FaqSection />
-        <CtaSection onQuiz={() => setQuizOpen(true)} />
-      </div>
+      <HeroSection onCta={() => jumpTo(2)} onScroll={() => jumpTo(1)} />
+      <ProductsSection onPick={() => jumpTo(2)} />
+      <QuizSection />
+      <VantagensSection />
+      <CompareSection />
+      <ComoFunciona />
+      <DepoimentosSection />
+      <FaqSection />
+      <CtaSection onQuiz={() => setQuizOpen(true)} />
       {TWEAKS.showFab && (
         <button className="fab" aria-label="Iniciar simulação" onClick={() => setQuizOpen(true)}>
           <Icon.Wpp width="26" height="26" />
