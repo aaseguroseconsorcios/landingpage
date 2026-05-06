@@ -144,6 +144,7 @@ function ProductsSection({ onPick }) {
 function QuizForm({ compact = false }) {
   const [step, setStep] = useState(1);
   const [done, setDone] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [data, setData] = useState({
     objetivo: '', tipoImovel: '', tipoVeiculo: '',
     valor: '', renda: '', idade: '',
@@ -158,8 +159,20 @@ function QuizForm({ compact = false }) {
   const canNext2 = data.valor && data.renda && data.idade;
   const canNext3 = data.nome && data.email && data.telefone;
 
-  const next = () => {
+  const next = async () => {
     if (step === 3) {
+      setIsSubmitting(true);
+      try {
+        await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+      } catch (err) {
+        console.error('Falha ao salvar lead', err);
+      } finally {
+        setIsSubmitting(false);
+      }
       openWhatsapp(data);
       setDone(true);
       return;
@@ -309,10 +322,10 @@ function QuizForm({ compact = false }) {
         {step > 1 && <button className="quiz-back" onClick={back}>Voltar</button>}
         <button
           className="quiz-next"
-          disabled={(step === 1 && !canNext1) || (step === 2 && !canNext2) || (step === 3 && !canNext3)}
+          disabled={(step === 1 && !canNext1) || (step === 2 && !canNext2) || (step === 3 && !canNext3) || isSubmitting}
           onClick={next}
         >
-          {step === 3 ? 'Quero simular agora' : 'Continuar'} <Icon.Arrow width="16" height="16" />
+          {step === 3 ? (isSubmitting ? 'Enviando...' : 'Quero simular agora') : 'Continuar'} <Icon.Arrow width="16" height="16" />
         </button>
       </div>
     </>
