@@ -73,16 +73,16 @@ function HeroSection({ onCta, onScroll }) {
       <div className="hero-grain" />
       <div className="section-inner">
         <div className="hero-logo">
-          <img src="/assets/logo.png" alt="AA Corretora" />
+          <img src="/assets/logo.webp" alt="AA Corretora" />
         </div>
         <span className="hero-tag"><span className="pulse"></span>Atendimento personalizado</span>
         <h1 className="hero-title">
           Realize seus sonhos <em>sem juros.</em>
         </h1>
         <div className="hero-photo">
-          <img src="/assets/hero.jpeg" alt="Especialista AA Corretora" />
+          <img src="/assets/hero.webp" alt="Especialista AA Corretora" />
           <div className="hero-photo-tag">
-            <div className="av"><img src="/assets/logo.png" alt="" /></div>
+            <div className="av"><img src="/assets/logo.webp" alt="" /></div>
             <div>
               <div className="nm">Atendimento dedicado</div>
               <div className="rl"></div>
@@ -490,9 +490,9 @@ function ComoFunciona() {
 
 function DepoimentosSection() {
   const items = [
-    { photo: '/assets/historia-2.jpeg', tag: '🏆 Campanha de Agosto', title: 'Primeira cliente premiada', q: '"Decidir com planejamento muda o jogo. Essa cliente iniciou o consórcio com a gente para trocar de moto — de forma organizada e sem juros. É sobre dar o próximo passo com segurança."' },
-    { photo: '/assets/historia-1.jpeg', tag: '🚀 Mais um sonho', title: 'Parabéns pelo planejamento!', q: '"Começar cedo faz toda a diferença. Esse cliente confiou na nossa corretora e iniciou o consórcio para planejar a construção da casa dele. É sobre visão de futuro e decisões bem feitas hoje."' },
-    { photo: '/assets/historia-3.jpeg', tag: '🎁 Carta contemplada', title: 'Entrega da carta de crédito', q: '"Quando a pessoa decide se planejar de verdade, as coisas acontecem. Esse cliente entrou no consórcio para comprar o veículo com estratégia — e foi contemplado na primeira parcela. Consórcio é planejamento. E, às vezes, também surpreende."' },
+    { photo: '/assets/historia-2.webp', tag: '🏆 Campanha de Agosto', title: 'Primeira cliente premiada', q: '"Decidir com planejamento muda o jogo. Essa cliente iniciou o consórcio com a gente para trocar de moto — de forma organizada e sem juros. É sobre dar o próximo passo com segurança."' },
+    { photo: '/assets/historia-1.webp', tag: '🚀 Mais um sonho', title: 'Parabéns pelo planejamento!', q: '"Começar cedo faz toda a diferença. Esse cliente confiou na nossa corretora e iniciou o consórcio para planejar a construção da casa dele. É sobre visão de futuro e decisões bem feitas hoje."' },
+    { photo: '/assets/historia-3.webp', tag: '🎁 Carta contemplada', title: 'Entrega da carta de crédito', q: '"Quando a pessoa decide se planejar de verdade, as coisas acontecem. Esse cliente entrou no consórcio para comprar o veículo com estratégia — e foi contemplado na primeira parcela. Consórcio é planejamento. E, às vezes, também surpreende."' },
   ];
 
   const [i, setI] = useState(0);
@@ -573,7 +573,7 @@ function CtaSection({ onQuiz }) {
   return (
     <section className="section s-cta" data-screen-label="09 Contato">
       <div className="cta-photo">
-        <img src="/assets/conversa.jpeg" alt="Atendimento AA Corretora" loading="lazy" width="400" height="400" style={{objectFit: 'cover'}} />
+        <img src="/assets/conversa.webp" alt="Atendimento AA Corretora" loading="lazy" width="400" height="400" style={{objectFit: 'cover'}} />
       </div>
       <div className="section-inner">
         <div className="cta-top-spacer">

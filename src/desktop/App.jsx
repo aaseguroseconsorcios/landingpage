@@ -23,7 +23,7 @@ function Nav({ onCta }) {
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="wrap nav-inner">
         <a className="nav-logo" href="#">
-          <img className="nav-logo-img" src="/assets/logo.png" alt="AA Corretora" />
+          <img className="nav-logo-img" src="/assets/logo.webp" alt="AA Corretora" />
         </a>
         <div className="nav-links">
           {links.map((l) => <a key={l.href} className="nav-link" href={l.href}>{l.label}</a>)}
@@ -66,9 +66,9 @@ function Hero({ onCta }) {
           </div>
         </div>
         <div className="hero-photo">
-          <img src="/assets/hero.jpeg" alt="Especialista AA Corretora" />
+          <img src="/assets/hero.webp" alt="Especialista AA Corretora" />
           <div className="hero-photo-tag">
-            <div className="av"><img src="/assets/logo.png" alt="" /></div>
+            <div className="av"><img src="/assets/logo.webp" alt="" /></div>
             <div>
               <div className="nm">Atendimento dedicado</div>
               <div className="rl">Especialista AA Corretora</div>
@@ -273,9 +273,9 @@ function ComoFunciona() {
 
 function Depoimentos() {
   const items = [
-    { photo: '/assets/historia-2.jpeg', tag: '🏆 Campanha de Agosto', title: 'Primeira cliente premiada', q: '"Decidir com planejamento muda o jogo. Essa cliente iniciou o consórcio com a gente para trocar de moto — de forma organizada e sem juros. É sobre dar o próximo passo com segurança."' },
-    { photo: '/assets/historia-1.jpeg', tag: '🚀 Mais um sonho', title: 'Parabéns pelo planejamento!', q: '"Começar cedo faz toda a diferença. Esse cliente confiou na nossa corretora e iniciou o consórcio para planejar a construção da casa dele. É sobre visão de futuro e decisões bem feitas hoje."' },
-    { photo: '/assets/historia-3.jpeg', tag: '🎁 Carta contemplada', title: 'Entrega da carta de crédito', q: '"Quando a pessoa decide se planejar de verdade, as coisas acontecem. Esse cliente entrou no consórcio para comprar o veículo com estratégia — e foi contemplado na primeira parcela. Consórcio é planejamento. E, às vezes, também surpreende."' },
+    { photo: '/assets/historia-2.webp', tag: '🏆 Campanha de Agosto', title: 'Primeira cliente premiada', q: '"Decidir com planejamento muda o jogo. Essa cliente iniciou o consórcio com a gente para trocar de moto — de forma organizada e sem juros. É sobre dar o próximo passo com segurança."' },
+    { photo: '/assets/historia-1.webp', tag: '🚀 Mais um sonho', title: 'Parabéns pelo planejamento!', q: '"Começar cedo faz toda a diferença. Esse cliente confiou na nossa corretora e iniciou o consórcio para planejar a construção da casa dele. É sobre visão de futuro e decisões bem feitas hoje."' },
+    { photo: '/assets/historia-3.webp', tag: '🎁 Carta contemplada', title: 'Entrega da carta de crédito', q: '"Quando a pessoa decide se planejar de verdade, as coisas acontecem. Esse cliente entrou no consórcio para comprar o veículo com estratégia — e foi contemplado na primeira parcela. Consórcio é planejamento. E, às vezes, também surpreende."' },
   ];
 
   return (
@@ -395,7 +395,7 @@ function Footer() {
         <div className="footer-grid">
           <div className="footer-col">
             <a className="nav-logo" href="#">
-              <img className="nav-logo-img footer-logo-img" src="/assets/logo.png" alt="AA Corretora" loading="lazy" width="190" height="42" />
+              <img className="nav-logo-img footer-logo-img" src="/assets/logo.webp" alt="AA Corretora" loading="lazy" width="190" height="42" />
             </a>
             <p className="footer-brand-text">
               Especialistas em consórcios há mais de 12 anos. Realize seus sonhos sem juros, com atendimento humano e personalizado.
