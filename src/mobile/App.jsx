@@ -496,14 +496,29 @@ function DepoimentosSection() {
   ];
 
   const [i, setI] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const dist = touchStart - touchEnd;
+    if (dist > 50) setI((prev) => (prev + 1) % items.length);
+    if (dist < -50) setI((prev) => (prev - 1 + items.length) % items.length);
+  };
+
   const cur = items[i];
   return (
     <section className="section s-test" data-screen-label="07 Depoimentos">
       <div className="section-inner">
         <span className="eyebrow">Quem já realizou</span>
         <h2 className="h-title">Histórias que <em>inspiram.</em></h2>
-        <div className="test-photo-card">
-          <img src={cur.photo} alt={cur.title} className="test-photo" />
+        <div className="test-photo-card" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+          <img src={cur.photo} alt={cur.title} className="test-photo" loading="lazy" width="80" height="80" />
           <div className="test-photo-overlay">
             <span className="test-photo-tag">{cur.tag}</span>
             <div className="test-photo-title">{cur.title}</div>
@@ -558,7 +573,7 @@ function CtaSection({ onQuiz }) {
   return (
     <section className="section s-cta" data-screen-label="09 Contato">
       <div className="cta-photo">
-        <img src="/assets/conversa.jpeg" alt="Atendimento AA Corretora" />
+        <img src="/assets/conversa.jpeg" alt="Atendimento AA Corretora" loading="lazy" width="400" height="400" style={{objectFit: 'cover'}} />
       </div>
       <div className="section-inner">
         <div className="cta-top-spacer">

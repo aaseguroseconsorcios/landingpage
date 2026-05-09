@@ -288,7 +288,7 @@ function Depoimentos() {
         <div className="test-grid">
           {items.map((it, i) => (
             <div className="test-photo-card" key={i}>
-              <img src={it.photo} alt={it.title} className="test-photo" />
+              <img src={it.photo} alt={it.title} className="test-photo" loading="lazy" width="80" height="80" />
               <div className="test-photo-overlay">
                 <span className="test-photo-tag">{it.tag}</span>
                 <div className="test-photo-title">{it.title}</div>
@@ -395,7 +395,7 @@ function Footer() {
         <div className="footer-grid">
           <div className="footer-col">
             <a className="nav-logo" href="#">
-              <img className="nav-logo-img footer-logo-img" src="/assets/logo.png" alt="AA Corretora" />
+              <img className="nav-logo-img footer-logo-img" src="/assets/logo.png" alt="AA Corretora" loading="lazy" width="190" height="42" />
             </a>
             <p className="footer-brand-text">
               Especialistas em consórcios há mais de 12 anos. Realize seus sonhos sem juros, com atendimento humano e personalizado.
