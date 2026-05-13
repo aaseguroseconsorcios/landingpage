@@ -1,5 +1,13 @@
 export const WHATSAPP_NUMBER = '5551996583583';
 
+function formatLocation(data) {
+  const cidade = (data.cidade || '').trim();
+  const estado = (data.estado || '').trim().toUpperCase();
+  if (!cidade) return '';
+  if (estado && !cidade.includes(' - ')) return `${cidade} - ${estado}`;
+  return cidade;
+}
+
 export function buildWhatsappText(data) {
   const tipo = data.objetivo === 'imovel' ? data.tipoImovel : data.tipoVeiculo;
   const categoria = data.objetivo === 'imovel' ? 'Imóvel' : 'Veículo';
@@ -10,7 +18,16 @@ export function buildWhatsappText(data) {
     `Valor desejado: R$ ${data.valor}`,
   ];
   if (data.idade) lines.push(`Faixa etária: ${data.idade}`);
-  if (data.nome) lines.push(`Meu nome é ${data.nome}.`);
+
+  const local = formatLocation(data);
+  if (data.nome && local) {
+    lines.push(`Meu nome é ${data.nome} e sou de ${local}.`);
+  } else if (data.nome) {
+    lines.push(`Meu nome é ${data.nome}.`);
+  } else if (local) {
+    lines.push(`Sou de ${local}.`);
+  }
+
   lines.push('');
   lines.push('Podem me ajudar a montar o melhor plano?');
   return lines.join('\n');

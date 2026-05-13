@@ -1427,3 +1427,71 @@
     .s-products { height: auto; }
     .s-products .product-card { min-height: 160px; }
   }
+
+  /* ============ CITY AUTOCOMPLETE (mobile) ============ */
+  .city-ac { position: relative; width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .city-ac-input-wrap { position: relative; }
+  .city-ac-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: rgba(0,0,0,0.4); pointer-events: none; display: flex;
+  }
+  .city-ac-input { padding-left: 36px !important; padding-right: 14px !important; }
+  .city-ac-suggestion {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 11px;
+    background: rgba(225, 6, 0, 0.08);
+    border: 1px solid rgba(225, 6, 0, 0.35);
+    border-radius: 10px;
+    color: var(--black);
+    font-size: 12.5px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s ease, border-color .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .city-ac-suggestion:active { background: rgba(225, 6, 0, 0.14); }
+  .city-ac-suggestion svg { color: var(--red); flex: none; }
+  .city-ac-suggestion b { font-weight: 700; }
+  .city-ac-suggestion-cta {
+    margin-left: auto; padding: 3px 8px;
+    background: var(--red); color: #fff;
+    border-radius: 999px; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    flex: none;
+  }
+  .city-ac-list {
+    margin: 0; padding: 4px;
+    list-style: none;
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    max-height: 240px; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    box-shadow: 0 12px 28px -10px rgba(0,0,0,0.18);
+  }
+  .city-ac-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 11px 12px;
+    border-radius: 8px;
+    color: var(--black);
+    font-size: 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .12s ease;
+  }
+  .city-ac-item.active, .city-ac-item:active {
+    background: rgba(225, 6, 0, 0.10);
+  }
+  .city-ac-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .city-ac-uf {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em;
+    color: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.06);
+    padding: 3px 7px; border-radius: 999px;
+    flex: none;
+  }
+  .city-ac-item.active .city-ac-uf { background: rgba(225, 6, 0, 0.20); color: var(--red-deep); }
+  .city-ac-mark { background: rgba(225, 6, 0, 0.22); color: var(--black); border-radius: 3px; padding: 0 2px; }
+  .city-ac-status { padding: 12px; color: rgba(0,0,0,0.45); font-size: 13px; text-align: center; list-style: none; }

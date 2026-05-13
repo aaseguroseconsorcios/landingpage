@@ -19,13 +19,43 @@ const distDir = path.join(__dirname, 'dist');
 const app = express();
 
 app.disable('x-powered-by');
+app.set('trust proxy', true);
 app.use(compression());
 app.use(express.json());
 
+app.get('/api/geo', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  try {
+    const xff = req.headers['x-forwarded-for'];
+    const rawIp = (xff && String(xff).split(',')[0].trim()) || req.ip || '';
+    const clientIp = rawIp.replace(/^::ffff:/, '');
+
+    if (!clientIp || clientIp === '::1' || clientIp.startsWith('127.')) {
+      return res.json({ city: null, state: null });
+    }
+
+    const r = await fetch(`https://ipwho.is/${clientIp}`);
+    if (!r.ok) return res.json({ city: null, state: null });
+    const data = await r.json();
+
+    if (!data?.success || data?.country_code !== 'BR') {
+      return res.json({ city: null, state: null });
+    }
+
+    return res.json({
+      city: data.city || null,
+      state: data.region_code || null,
+    });
+  } catch (err) {
+    console.error('geo lookup failed:', err);
+    res.json({ city: null, state: null });
+  }
+});
+
 app.post('/api/leads', async (req, res) => {
   try {
-    const { objetivo, tipoImovel, tipoVeiculo, valor, renda, idade, nome, email, telefone } = req.body;
-    
+    const { objetivo, tipoImovel, tipoVeiculo, valor, renda, idade, nome, email, telefone, cidade, estado } = req.body;
+
     // Clean currency string to decimal (e.g., "200.000" -> 200000.00)
     const parseCurrency = (val) => {
       if (!val) return null;
@@ -36,12 +66,14 @@ app.post('/api/leads', async (req, res) => {
     const bem = objetivo === 'imovel' ? tipoImovel : tipoVeiculo;
     const cleanValor = parseCurrency(valor);
     const cleanRenda = parseCurrency(renda);
+    const cleanCidade = cidade ? String(cidade).trim().slice(0, 120) || null : null;
+    const cleanEstado = estado ? String(estado).trim().toUpperCase().slice(0, 2) || null : null;
 
     const checkRes = await pool.query(
       `INSERT INTO quiz_leads (
-        objetivo, tipo_bem_desejado, valor_desejado, renda_familiar, faixa_idade, nome, email, telefone_whatsapp
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-      [objetivo, bem, cleanValor, cleanRenda, idade, nome, email, telefone]
+        objetivo, tipo_bem_desejado, valor_desejado, renda_familiar, faixa_idade, nome, email, telefone_whatsapp, cidade, estado
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+      [objetivo, bem, cleanValor, cleanRenda, idade, nome, email, telefone, cleanCidade, cleanEstado]
     );
 
     res.status(201).json({ success: true, id: checkRes.rows[0].id });

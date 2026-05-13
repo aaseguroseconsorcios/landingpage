@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { openWhatsapp } from '../shared/whatsapp.js';
+import { CityAutocomplete, loadCities, loadGeo } from '../shared/CityAutocomplete.jsx';
 import './styles.css';
 
 const Icon = {
@@ -145,10 +146,12 @@ function QuizForm({ compact = false }) {
   const [step, setStep] = useState(1);
   const [done, setDone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [geoSuggestion, setGeoSuggestion] = useState(null);
   const [data, setData] = useState({
     objetivo: '', tipoImovel: '', tipoVeiculo: '',
     valor: '', renda: '', idade: '',
     nome: '', email: '', telefone: '',
+    cidade: '', estado: '',
   });
 
   const set = (k, v) => setData((d) => ({ ...d, [k]: v }));
@@ -157,7 +160,17 @@ function QuizForm({ compact = false }) {
 
   const canNext1 = data.objetivo && (data.objetivo === 'imovel' ? data.tipoImovel : data.tipoVeiculo);
   const canNext2 = data.valor && data.renda && data.idade;
-  const canNext3 = data.nome && data.email && data.telefone;
+  const canNext3 = data.nome && data.email && data.telefone && data.cidade;
+
+  useEffect(() => {
+    let alive = true;
+    loadGeo().then((g) => { if (alive && g) setGeoSuggestion(g); });
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
+    if (step === 2) loadCities();
+  }, [step]);
 
   const next = async () => {
     if (step === 3) {
@@ -207,7 +220,7 @@ function QuizForm({ compact = false }) {
         <button
           className="quiz-back"
           style={{ alignSelf: 'center', marginTop: 8 }}
-          onClick={() => { setDone(false); setStep(1); setData({ objetivo: '', tipoImovel: '', tipoVeiculo: '', valor: '', renda: '', idade: '', nome: '', email: '', telefone: '' }); }}
+          onClick={() => { setDone(false); setStep(1); setData({ objetivo: '', tipoImovel: '', tipoVeiculo: '', valor: '', renda: '', idade: '', nome: '', email: '', telefone: '', cidade: '', estado: '' }); }}
         >
           Refazer simulação
         </button>
@@ -306,6 +319,16 @@ function QuizForm({ compact = false }) {
             <div className="quiz-q">Qual o seu melhor e-mail?<span className="req">*</span></div>
             <input className="quiz-input" type="email" placeholder="seu@email.com"
               value={data.email} onChange={(e) => set('email', e.target.value)} />
+
+            <div className="quiz-q">Em qual cidade você mora?<span className="req">*</span></div>
+            <CityAutocomplete
+              id={`quiz-cidade-mobile${compact ? '-modal' : ''}`}
+              value={data.cidade}
+              suggestion={geoSuggestion}
+              placeholder="Digite ou selecione sua cidade"
+              onChange={(text) => setData((d) => ({ ...d, cidade: text, estado: '' }))}
+              onPick={(c) => setData((d) => ({ ...d, cidade: c ? `${c.nome} - ${c.uf}` : d.cidade, estado: c?.uf || '' }))}
+            />
 
             <div className="quiz-q">Qual o melhor WhatsApp?<span className="req">*</span></div>
             <div className="quiz-pair">

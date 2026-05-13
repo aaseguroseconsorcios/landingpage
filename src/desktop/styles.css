@@ -1008,3 +1008,75 @@
     .nav-inner { height: 64px; }
     .hero-photo-floater { display: none; }
   }
+
+  /* ============ CITY AUTOCOMPLETE ============ */
+  .city-ac { position: relative; width: 100%; }
+  .city-ac-input-wrap { position: relative; }
+  .city-ac-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--txt-3); pointer-events: none; display: flex;
+  }
+  .city-ac-input { padding-left: 40px !important; padding-right: 36px !important; }
+  .city-ac-suggestion {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(200, 16, 46, 0.08);
+    border: 1px solid rgba(200, 16, 46, 0.35);
+    border-radius: 10px;
+    color: var(--txt);
+    font-size: 13px;
+    font-family: var(--sans);
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .city-ac-suggestion:hover {
+    background: rgba(200, 16, 46, 0.14);
+    border-color: var(--red);
+    transform: translateY(-1px);
+  }
+  .city-ac-suggestion svg { color: var(--red); flex: none; }
+  .city-ac-suggestion b { color: var(--txt); font-weight: 700; }
+  .city-ac-suggestion-cta {
+    margin-left: 4px; padding: 3px 8px;
+    background: var(--red); color: #fff;
+    border-radius: 999px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .city-ac-list {
+    position: absolute; z-index: 30;
+    top: calc(100% + 6px); left: 0; right: 0;
+    margin: 0; padding: 6px;
+    list-style: none;
+    background: #181818;
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+    max-height: 280px; overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .city-ac-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--txt);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .12s ease;
+  }
+  .city-ac-item.active, .city-ac-item:hover {
+    background: rgba(200, 16, 46, 0.18);
+  }
+  .city-ac-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .city-ac-uf {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--txt-3);
+    background: rgba(255,255,255,0.06);
+    padding: 3px 8px; border-radius: 999px;
+    flex: none;
+  }
+  .city-ac-item.active .city-ac-uf, .city-ac-item:hover .city-ac-uf {
+    background: rgba(200, 16, 46, 0.28); color: var(--txt);
+  }
+  .city-ac-mark { background: rgba(200, 16, 46, 0.32); color: var(--txt); border-radius: 3px; padding: 0 2px; }
+  .city-ac-status { padding: 12px; color: var(--txt-3); font-size: 13px; text-align: center; }
