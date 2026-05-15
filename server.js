@@ -23,33 +23,64 @@ app.set('trust proxy', true);
 app.use(compression());
 app.use(express.json());
 
+async function lookupIpapi(ip) {
+  const r = await fetch(`https://ipapi.co/${ip}/json/`, {
+    headers: { 'User-Agent': 'aa-corretora-landing/1.0' },
+  });
+  if (!r.ok) throw new Error(`ipapi.co ${r.status}`);
+  const data = await r.json();
+  if (data?.error) throw new Error(`ipapi.co error: ${data.reason || 'unknown'}`);
+  return {
+    country: data.country_code || null,
+    city: data.city || null,
+    state: data.region_code || null,
+    raw: data,
+    provider: 'ipapi.co',
+  };
+}
+
+async function lookupIpwhois(ip) {
+  const r = await fetch(`https://ipwho.is/${ip}`);
+  if (!r.ok) throw new Error(`ipwho.is ${r.status}`);
+  const data = await r.json();
+  if (!data?.success) throw new Error(`ipwho.is error: ${data?.message || 'unknown'}`);
+  return {
+    country: data.country_code || null,
+    city: data.city || null,
+    state: data.region_code || null,
+    raw: data,
+    provider: 'ipwho.is',
+  };
+}
+
 app.get('/api/geo', async (req, res) => {
   res.set('Cache-Control', 'no-store');
-  try {
-    const xff = req.headers['x-forwarded-for'];
-    const rawIp = (xff && String(xff).split(',')[0].trim()) || req.ip || '';
-    const clientIp = rawIp.replace(/^::ffff:/, '');
+  const xff = req.headers['x-forwarded-for'];
+  const rawIp = (xff && String(xff).split(',')[0].trim()) || req.ip || '';
+  const clientIp = rawIp.replace(/^::ffff:/, '');
 
-    if (!clientIp || clientIp === '::1' || clientIp.startsWith('127.')) {
-      return res.json({ city: null, state: null });
-    }
+  console.log('[geo] xff=%j reqIp=%j clientIp=%j', xff, req.ip, clientIp);
 
-    const r = await fetch(`https://ipwho.is/${clientIp}`);
-    if (!r.ok) return res.json({ city: null, state: null });
-    const data = await r.json();
-
-    if (!data?.success || data?.country_code !== 'BR') {
-      return res.json({ city: null, state: null });
-    }
-
-    return res.json({
-      city: data.city || null,
-      state: data.region_code || null,
-    });
-  } catch (err) {
-    console.error('geo lookup failed:', err);
-    res.json({ city: null, state: null });
+  if (!clientIp || clientIp === '::1' || clientIp.startsWith('127.')) {
+    console.log('[geo] local IP, skipping lookup');
+    return res.json({ city: null, state: null });
   }
+
+  for (const fn of [lookupIpapi, lookupIpwhois]) {
+    try {
+      const out = await fn(clientIp);
+      console.log('[geo] %s ok: country=%s city=%s state=%s', out.provider, out.country, out.city, out.state);
+      if (out.country !== 'BR') {
+        return res.json({ city: null, state: null });
+      }
+      return res.json({ city: out.city, state: out.state });
+    } catch (err) {
+      console.warn('[geo] provider failed:', err.message);
+    }
+  }
+
+  console.error('[geo] all providers failed for ip=%s', clientIp);
+  res.json({ city: null, state: null });
 });
 
 app.post('/api/leads', async (req, res) => {
