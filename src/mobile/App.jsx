@@ -431,7 +431,7 @@ function VantagensSection() {
   );
 }
 
-function CompareSection() {
+function CompareSection({ onCta }) {
   return (
     <section className="section s-compare" data-screen-label="05 Comparativo">
       <div className="section-inner">
@@ -476,6 +476,10 @@ function CompareSection() {
           <span className="compare-savings-label">Com consórcio você economiza</span>
           <span className="compare-savings-val">R$ 641 mil</span>
         </div>
+
+        <button className="btn btn-red btn-block compare-cta" onClick={onCta}>
+          Quero economizar também <Icon.Arrow width="18" height="18" />
+        </button>
       </div>
     </section>
   );
@@ -686,7 +690,7 @@ export default function MobileApp() {
       <ProductsSection onPick={() => jumpTo(2)} />
       <QuizSection />
       <VantagensSection />
-      <CompareSection />
+      <CompareSection onCta={() => jumpTo(2)} />
       <ComoFunciona />
       <DepoimentosSection />
       <FaqSection />

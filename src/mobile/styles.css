@@ -928,6 +928,8 @@
   }
   .cmp-final-val { font-family: 'Fraunces', serif; font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em; }
 
+  .compare-cta { margin-top: 14px; }
+
   .compare-savings {
     margin-top: 10px;
     background: var(--black);
