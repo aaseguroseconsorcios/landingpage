@@ -1,5 +1,6 @@
 import express from 'express';
 import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
@@ -59,17 +60,13 @@ app.get('/api/geo', async (req, res) => {
   const rawIp = (xff && String(xff).split(',')[0].trim()) || req.ip || '';
   const clientIp = rawIp.replace(/^::ffff:/, '');
 
-  console.log('[geo] xff=%j reqIp=%j clientIp=%j', xff, req.ip, clientIp);
-
   if (!clientIp || clientIp === '::1' || clientIp.startsWith('127.')) {
-    console.log('[geo] local IP, skipping lookup');
     return res.json({ city: null, state: null });
   }
 
   for (const fn of [lookupIpapi, lookupIpwhois]) {
     try {
       const out = await fn(clientIp);
-      console.log('[geo] %s ok: country=%s city=%s state=%s', out.provider, out.country, out.city, out.state);
       if (out.country !== 'BR') {
         return res.json({ city: null, state: null });
       }
@@ -79,32 +76,83 @@ app.get('/api/geo', async (req, res) => {
     }
   }
 
-  console.error('[geo] all providers failed for ip=%s', clientIp);
   res.json({ city: null, state: null });
 });
 
-app.post('/api/leads', async (req, res) => {
-  try {
-    const { objetivo, tipoImovel, tipoVeiculo, valor, renda, idade, nome, email, telefone, cidade, estado } = req.body;
+const leadsLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Muitas tentativas. Tente novamente em alguns minutos.' },
+});
 
-    // Clean currency string to decimal (e.g., "200.000" -> 200000.00)
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const OBJETIVOS = new Set(['imovel', 'veiculo']);
+const TIPOS_IMOVEL = new Set(['Casa / Apartamento', 'Terreno / Construção', 'Imóvel comercial', 'Investimento']);
+const TIPOS_VEICULO = new Set(['Carro 0km', 'Carro seminovo', 'Moto', 'Pesado / Utilitário']);
+const FAIXAS_IDADE = new Set(['18 – 25 anos', '26 – 35 anos', '36 – 45 anos', '46 – 55 anos', '56+ anos']);
+
+function str(v, max) {
+  if (v == null) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  return s.slice(0, max);
+}
+
+app.post('/api/leads', leadsLimiter, async (req, res) => {
+  try {
+    const { objetivo, tipoImovel, tipoVeiculo, valor, renda, idade, nome, email, telefone, cidade, estado, hp_field } = req.body || {};
+
+    if (hp_field) {
+      return res.status(201).json({ success: true, id: null });
+    }
+
+    if (!OBJETIVOS.has(objetivo)) {
+      return res.status(400).json({ error: 'objetivo inválido' });
+    }
+    const tipoBem = objetivo === 'imovel' ? tipoImovel : tipoVeiculo;
+    const tiposPermitidos = objetivo === 'imovel' ? TIPOS_IMOVEL : TIPOS_VEICULO;
+    if (!tiposPermitidos.has(tipoBem)) {
+      return res.status(400).json({ error: 'tipo de bem inválido' });
+    }
+    if (idade != null && !FAIXAS_IDADE.has(idade)) {
+      return res.status(400).json({ error: 'faixa de idade inválida' });
+    }
+
+    const cleanNome = str(nome, 120);
+    const cleanEmail = str(email, 160);
+    const cleanTelefone = str(telefone, 20);
+    if (!cleanNome || cleanNome.length < 2) {
+      return res.status(400).json({ error: 'nome inválido' });
+    }
+    if (!cleanEmail || !EMAIL_RE.test(cleanEmail)) {
+      return res.status(400).json({ error: 'email inválido' });
+    }
+    const telDigits = cleanTelefone ? cleanTelefone.replace(/\D/g, '') : '';
+    if (telDigits.length < 10 || telDigits.length > 13) {
+      return res.status(400).json({ error: 'telefone inválido' });
+    }
+
     const parseCurrency = (val) => {
       if (!val) return null;
       const num = String(val).replace(/\./g, '').replace(',', '.');
-      return parseFloat(num) || 0;
+      const n = parseFloat(num);
+      if (!Number.isFinite(n) || n < 0 || n > 1e10) return null;
+      return n;
     };
 
-    const bem = objetivo === 'imovel' ? tipoImovel : tipoVeiculo;
     const cleanValor = parseCurrency(valor);
     const cleanRenda = parseCurrency(renda);
-    const cleanCidade = cidade ? String(cidade).trim().slice(0, 120) || null : null;
-    const cleanEstado = estado ? String(estado).trim().toUpperCase().slice(0, 2) || null : null;
+    const cleanCidade = str(cidade, 120);
+    const rawEstado = str(estado, 2);
+    const cleanEstado = rawEstado && /^[A-Za-z]{2}$/.test(rawEstado) ? rawEstado.toUpperCase() : null;
 
     const checkRes = await pool.query(
       `INSERT INTO quiz_leads (
         objetivo, tipo_bem_desejado, valor_desejado, renda_familiar, faixa_idade, nome, email, telefone_whatsapp, cidade, estado
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
-      [objetivo, bem, cleanValor, cleanRenda, idade, nome, email, telefone, cleanCidade, cleanEstado]
+      [objetivo, tipoBem, cleanValor, cleanRenda, idade, cleanNome, cleanEmail, telDigits, cleanCidade, cleanEstado]
     );
 
     res.status(201).json({ success: true, id: checkRes.rows[0].id });
