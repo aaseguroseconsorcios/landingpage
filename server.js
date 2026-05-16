@@ -20,7 +20,7 @@ const distDir = path.join(__dirname, 'dist');
 const app = express();
 
 app.disable('x-powered-by');
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 app.use(compression());
 app.use(express.json());
 
