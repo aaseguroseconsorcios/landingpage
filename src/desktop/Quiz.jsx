@@ -39,6 +39,9 @@ export function QuizForm({ onClose }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
+        if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+          window.fbq('track', 'Lead', { content_name: 'Quiz consórcio' });
+        }
       } catch (err) {
         console.error('Falha ao salvar lead', err);
       } finally {
