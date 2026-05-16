@@ -58,7 +58,8 @@ export function trackLead(data, leadId) {
 
   try {
     window.fbq('init', PIXEL_ID, userData);
-    window.fbq('track', 'Lead', { content_name: 'Quiz consórcio' });
+    const opts = leadId ? { eventID: String(leadId) } : undefined;
+    window.fbq('track', 'Lead', { content_name: 'Quiz consórcio' }, opts);
   } catch (err) {
     console.warn('Falha ao disparar Lead no Meta Pixel', err);
   }
