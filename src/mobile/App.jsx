@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { openWhatsapp } from '../shared/whatsapp.js';
 import { CityAutocomplete, loadCities, loadGeo } from '../shared/CityAutocomplete.jsx';
+import { trackLead } from '../shared/metaPixel.js';
 import './styles.css';
 
 const Icon = {
@@ -175,15 +176,17 @@ function QuizForm({ compact = false }) {
   const next = async () => {
     if (step === 3) {
       setIsSubmitting(true);
+      let leadId = null;
       try {
-        await fetch('/api/leads', {
+        const resp = await fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-          window.fbq('track', 'Lead', { content_name: 'Quiz consórcio' });
+        if (resp.ok) {
+          try { const json = await resp.json(); leadId = json?.id ?? null; } catch {}
         }
+        trackLead(data, leadId);
       } catch (err) {
         console.error('Falha ao salvar lead', err);
       } finally {
